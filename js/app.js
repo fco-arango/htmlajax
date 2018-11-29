@@ -39,12 +39,14 @@ btnGuardar.addEventListener('click', guardar);
       };
     xhttp.open("POST", "http://nyc.pixan.io/ajax/public/api/students", true);
     xhttp.send(data);
-}
+  }
   function actualizar()
   {
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function(){
-        if (this.readyState == 4 && this.status == 200){
+    xhttp.onreadystatechange = function()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
           //alert(this.responseText);
 
           // se agrego todo esto
@@ -54,29 +56,71 @@ btnGuardar.addEventListener('click', guardar);
             document.getElementsByTagName('tbody')[0].innerHTML = "";
             response.students.forEach(function(student)
             {
+              //var html = "<tr><td>"
+              //+student.id
+              //+"<tr><td>"
+              //+student.first_name
+              //+"<tr><td>"
+              //+student.last_name
+              //+"<tr><td>"
+              //+<button class=eliminar type=button>eliminar </button>
+              //+"<tr><td>"
               var row = document.createElement("tr");
               var idCell = document.createElement("td");
               var firstNameCell = document.createElement("td");
               var lastNameCell = document.createElement("td");
+              var deleteButtonCell = document.createElement("td");
+              var deleteButton = document.createElement("button");
+              deleteButton.className = "Eliminar";
 
               var idText = document.createTextNode(student.id);
               var firstNameText = document.createTextNode(student.first_name);
-              var lastNameText = document.createTextNode(student.last_name);
+              var lastNameText = document.createTextNode(student.last_name)
+              var deleteButtonText = document.createTextNode("Eliminar")
 
               idCell.appendChild(idText);
               firstNameCell.appendChild(firstNameText);
               lastNameCell.appendChild(lastNameText);
 
+              deleteButton.appendChild(deleteButtonText);
+              deleteButtonCell.appendChild(deleteButton);
+
               row.appendChild(idCell);
               row.appendChild(firstNameCell);
               row.appendChild(lastNameCell);
+              row.appendChild(deleteButtonCell);
 
               document.getElementsByTagName('tbody')[0].appendChild(row);
             });
+            var botonesEliminar = document.getElementsByClassName('Eliminar');
+            for(var i=0; i<botonesEliminar.length;i++)
+            {
+              botonesEliminar[i].addEventListener('click', eliminarUsuario(response.students[i]));
+            }
           }
         }
     };
     xhttp.open("GET", "http://nyc.pixan.io/ajax/public/api/students", true);
     xhttp.send();
+  }
 
+  function eliminarUsuario(student)
+  {
+    //console.log('estoy creando la función para eliminar el usuario'+student.id);
+    return function(event)
+    {
+      //alert('hola');
+      //var data = new FormData();
+      //data.append('_method', 'DELETE')
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function()
+      {
+        if (this.readyState == 4 && this.status == 200)
+        {
+          event.target.parentNode.parentNode.parentNode.removeChild(event.target.parentNode.parentNode);
+        }
+      };
+      xhr.open("DELETE", "http://nyc.pixan.io/ajax/public/api/students/"+student.id, true);
+      xhr.send();
+    }
   }
